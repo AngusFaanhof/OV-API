@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
+const moment = require('moment');
 
-async function getData(from, to) {
+async function getData(from, to, date) {
 	const browser = await puppeteer.launch({
 		// headless: false,
 		headless: "new",
@@ -19,13 +20,15 @@ async function getData(from, to) {
 	acceptButton.click();
 
 	async function results() {
-		await page.waitForSelector('input#van');
 		await new Promise(r => setTimeout(r, 500)); // Let page fully load
+		await page.waitForSelector('input#van');
 
-		await page.type('input#van', from);
 
-		await page.waitForSelector('input#naar');
-		await page.type('input#naar', to);
+		// TODO: extract to function
+		await page.$eval('input#van', (el,value) => el.value = value, from);
+		await page.$eval('input#naar', (el,value) => el.value = value, to);
+		await page.$eval('input#date', (el,value) => el.value = value, moment(date).format('DD-MM-YYYY'));
+		await page.$eval('input#time', (el,value) => el.value = value, moment(date).format('HH:mm'));
 
 		await page.click('button[type="submit"]');
 
@@ -42,4 +45,6 @@ async function getData(from, to) {
 	results();
 }
 
-getData('Zaandam', 'Metro Amstelveenseweg');
+const date = new Date("2023-05-10T12:00:00+01:00");
+
+getData('Zaandam', 'Metro Amstelveenseweg', date);
