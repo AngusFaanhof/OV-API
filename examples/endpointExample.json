@@ -1,0 +1,49 @@
+{
+	"departure": {
+		"time": "13:18",
+		"station": "Treinstation Zaandam"
+	},
+	"arrival": {
+		"time": "13:38",
+		"station": "Metrostation Amstelveenseweg, Amsterdam"
+	},
+	"steps": [
+		{
+			"transport": "NS Sprinter",
+			"direction": "Den Haag Centraal",
+			"departure": {
+				"time": "13:18",
+				"platform": "5",
+				"type": "Trein"
+			},
+			"arrival": {
+				"time": "13:29",
+				"platform": "1",
+				"station": "Treinstation Amsterdam Lelylaan"
+			}
+		},
+		{
+			"transport": "Lopen",
+			"departure": {
+				"time": "13:29",
+				"station": "Treinstation Amsterdam Lelylaan"
+			},
+			"arrival": {
+				"time": "13:32",
+				"station": "Metrostation Station Lelylaan, Amsterdam"
+			}
+		},
+		{
+			"transport": "GVB Metro 51",
+			"direction": "Centraal Station",
+			"departure": {
+				"time": "13:33",
+				"station": "Metrostation Station Lelylaan, Amsterdam"
+			},
+			"arrival": {
+				"time": "13:38",
+				"station": "Metrostation Amstelveenseweg, Amsterdam"
+			}
+		}
+	]
+}
