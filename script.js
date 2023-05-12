@@ -37,9 +37,43 @@ async function getData(from, to, date) {
 		await page.click('button[type="submit"]');
 
 		await page.waitForSelector('#journeyTabList');
-		const contents = await page.$eval('#journeyTabList', el => el.innerHTML);
 
-		console.log(contents);
+		// format to api
+		let handles = await page.$$('div.active ul li');
+		let responses = [];
+
+		for (let i = 0; i < handles.length; i++) {
+			let handle = handles[i];
+
+			let transportType = await handle.$eval('strong', (el) => el.innerText);
+
+			let times = await handle.$eval('.timeline-time span', (el) => el.innerText);
+			let stations = await handle.$eval('span a', (el) => el.innerText);
+
+			console.log("times", times);
+			console.log("stations", stations);
+
+			let response = {
+				transport: transportType,
+				departure: {
+					time: times[0],
+					station: stations[0]
+				},
+				arrival: {
+					time: times[1],
+					station: stations[1]
+				}
+			}
+
+			if (transportType != 'Lopen')
+				response.direction = await handle.$eval('.text-muted', (el) => el.innerText);
+
+			if (transportType.startsWith('NS'))
+				response.departure.platform = await handle.$eval('.timeline-type > span', (el) => el.innerText);
+
+			responses.push(response);
+		}
+		console.log(responses);
 	}
 
 	results();
