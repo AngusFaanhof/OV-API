@@ -23,7 +23,6 @@ async function getData(from, to, date) {
 		await new Promise(r => setTimeout(r, 500)); // Let page fully load
 		await page.waitForSelector('input#van');
 
-
 		// TODO: extract to function
 		await page.$eval('input#van', (el,value) => el.value = value, from);
 		await page.$eval('input#naar', (el,value) => el.value = value, to);
@@ -42,37 +41,44 @@ async function getData(from, to, date) {
 		let handles = await page.$$('div.active ul li');
 		let responses = [];
 
+		// TODO: clean up
 		for (let i = 0; i < handles.length; i++) {
-			let handle = handles[i];
+			const handle = handles[i];
+			const response = {}
 
-			let transportType = await handle.$eval('strong', (el) => el.innerText);
+			// transport
+			const transportType = await handle.$eval('strong', (el) => el.innerText);
+			response.transport = transportType;
 
-			let times = await handle.$eval('.timeline-time span', (el) => el.innerText);
-			let stations = await handle.$eval('span a', (el) => el.innerText);
-
-			console.log("times", times);
-			console.log("stations", stations);
-
-			let response = {
-				transport: transportType,
-				departure: {
-					time: times[0],
-					station: stations[0]
-				},
-				arrival: {
-					time: times[1],
-					station: stations[1]
-				}
+			// direction
+			if (transportType != 'Lopen') {
+				response.direction = await handle.$eval('.text-muted.small', (el) => el.innerText);
 			}
 
-			if (transportType != 'Lopen')
-				response.direction = await handle.$eval('.text-muted', (el) => el.innerText);
+			// times
+			response.times = await handle.$$eval('.timeline-time span', els => els.map(el => el.innerText));;
 
-			if (transportType.startsWith('NS'))
-				response.departure.platform = await handle.$eval('.timeline-type > span', (el) => el.innerText);
+			// from / to
+			const allStations = await handle.$$eval('.leg-link a', els => {
+				return els.map(el => el.innerText);
+			});
+
+			response.from = i == 0 ? allStations[0] : responses[i-1].to;
+			response.to = i == 0 ? allStations[1] : allStations[0];
+
+			// Add track logic
+			if (transportType.startsWith('NS')) {
+				const elementTexts = await handle.$$eval('.timeline-type > span', els => {
+					return els.map(el => el.innerText);
+				});
+
+				response.from += ' - ' + elementTexts[2];
+				response.to += ' - ' + elementTexts[4];
+			}
 
 			responses.push(response);
 		}
+
 		console.log(responses);
 	}
 
