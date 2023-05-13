@@ -37,9 +37,9 @@ async function getData(from, to, date) {
 
 		await page.waitForSelector('#journeyTabList');
 
-		// format to api
+		// format to steps array
 		let handles = await page.$$('div.active ul li');
-		let responses = [];
+		let steps = [];
 
 		// TODO: clean up
 		for (let i = 0; i < handles.length; i++) {
@@ -63,7 +63,7 @@ async function getData(from, to, date) {
 				return els.map(el => el.innerText);
 			});
 
-			response.from = i == 0 ? allStations[0] : responses[i-1].to;
+			response.from = i == 0 ? allStations[0] : steps[i-1].to;
 			response.to = i == 0 ? allStations[1] : allStations[0];
 
 			// Add track logic
@@ -76,15 +76,22 @@ async function getData(from, to, date) {
 				response.to += ' - ' + elementTexts[4];
 			}
 
-			responses.push(response);
+			steps.push(response);
 		}
 
-		console.log(responses);
+		const apiResponse = {
+			departureTime: steps[0].times[0],
+			arrivalTime: steps[steps.length - 1].times[1],
+			steps: steps
+		}
+
+		return apiResponse;
 	}
 
-	results();
+	const apiResponse = await results();
+	const jsonApiResponse = JSON.stringify(apiResponse);
+	console.log(jsonApiResponse);
 }
 
 const date = new Date("2023-05-10T12:00:00+01:00");
-
 getData('Zaandam', 'Metro Amstelveenseweg', date);
