@@ -84,6 +84,8 @@ async function getAPIData(from, to, date) {
 	const apiResponse = await extractAPIData(page);
 	// const jsonApiResponse = JSON.stringify(apiResponse);
 	console.log(apiResponse);
+
+	await browser.close();
 	return apiResponse;
 }
 
