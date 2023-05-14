@@ -5,21 +5,22 @@ async function navigateToDetails(page, from, to, date) {
 	await new Promise(r => setTimeout(r, 500));
 	await page.waitForSelector('input#van');
 
-	await page.$eval('input#van', (el,value) => el.value = value, from);
-	await page.$eval('input#naar', (el,value) => el.value = value, to);
-	await page.$eval('input#date', (el,value) => el.value = value, moment(date).format('DD-MM-YYYY'));
-	await page.$eval('input#time', (el,value) => el.value = value, moment(date).format('HH:mm'));
+	await page.type('input#van', from);
+	await page.type('input#naar', to);
+	await page.type('input#date', moment(date).format('DD-MM-YYYY'));
+	await page.type('input#time', moment(date).format('HH:mm'));
 
 	await page.click('button[type="submit"]');
 
-	// Next page in sequence
+	// Confirm route
 	await page.waitForSelector('#from-text-again')
 	await page.click('button[type="submit"]');
+
+	// Wait for details page to load
+	await page.waitForSelector('#journeyTabList');
 }
 
 async function extractAPIData(page) {
-	await page.waitForSelector('#journeyTabList');
-
 	//format to steps array
 	let handles = await page.$$('div.active ul li');
 	let steps = [];
