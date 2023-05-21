@@ -82,15 +82,16 @@ async function getAPIData(from, to, date) {
 
 	await navigateToDetails(page, from, to, date);
 	const apiResponse = await extractAPIData(page);
-	// const jsonApiResponse = JSON.stringify(apiResponse);
-	console.log(apiResponse);
 
 	await browser.close();
+
 	return apiResponse;
 }
 
-const from = 'Zaandam';
-const to = 'Metro Amstelveenseweg';
-const date = new Date("2023-05-10T12:00:00+01:00");
+// example call
+// const from = 'Zaandam';
+// const to = 'Metro Amstelveenseweg';
+// const date = new Date("2023-05-10T12:00:00+01:00");
+// getAPIData(from, to, date);
 
-getAPIData(from, to, date);
+module.exports = getAPIData;
