@@ -7,6 +7,9 @@ async function navigateToDetails(page, from, to, date) {
 
 	await page.type('input#van', from);
 	await page.type('input#naar', to);
+
+	// select arrival time
+	await page.click('#aankomst');
 	await page.type('input#date', moment(date).format('DD-MM-YYYY'));
 	await page.type('input#time', moment(date).format('HH:mm'));
 
