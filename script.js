@@ -1,7 +1,15 @@
 const puppeteer = require('puppeteer');
-const moment = require('moment');
 
-async function navigateToDetails(page, from, to, date) {
+function getTimeFormatted(datetime) {
+	const fullMinutes = datetime.getMinutes() < 10 ? `0${datetime.getMinutes()}` : datetime.getMinutes();
+	return `${datetime.getUTCHours()}:${fullMinutes}`
+}
+
+function getDateFormatted(datetime) {
+	return datetime.toLocaleDateString('nl-NL', { year: 'numeric', month: '2-digit', day: '2-digit'});
+}
+
+async function navigateToDetails(page, from, to, datetime) {
 	await new Promise(r => setTimeout(r, 500));
 	await page.waitForSelector('input#van');
 
@@ -10,8 +18,8 @@ async function navigateToDetails(page, from, to, date) {
 
 	// select arrival time
 	await page.click('#aankomst');
-	await page.type('input#date', moment(date).format('DD-MM-YYYY'));
-	await page.type('input#time', moment(date).format('HH:mm'));
+	await page.type('input#date', getDateFormatted(datetime));
+	await page.type('input#time', getTimeFormatted(datetime));
 
 	await page.click('button[type="submit"]');
 
@@ -67,7 +75,7 @@ async function extractAPIData(page) {
 	}
 }
 
-async function getAPIData(from, to, date) {
+async function getAPIData(from, to, datetime) {
 	const browser = await puppeteer.launch({
 		// headless: false,
 		headless: "new",
@@ -83,7 +91,7 @@ async function getAPIData(from, to, date) {
 	const acceptButton = await frame.$('button#save');
 	acceptButton.click();
 
-	await navigateToDetails(page, from, to, date);
+	await navigateToDetails(page, from, to, datetime);
 	const apiResponse = await extractAPIData(page);
 
 	await browser.close();
@@ -94,7 +102,7 @@ async function getAPIData(from, to, date) {
 // example call
 // const from = 'Zaandam';
 // const to = 'Metro Amstelveenseweg';
-// const date = new Date("2023-05-10T12:00:00+01:00");
-// getAPIData(from, to, date);
+// const datetime = new Date("2023-05-10T12:00:00+01:00");
+// getAPIData(from, to, datetime);
 
 module.exports = getAPIData;

@@ -6,9 +6,9 @@ const app = express();
 app.get('/:from/:to', async function (req, res) {
 	const from = req.params.from;
 	const to = req.params.to;
-	const date = new Date();
+	const datetime = new Date();
 
-	const response = await getAPIData(from, to, date);
+	const response = await getAPIData(from, to, datetime);
 	res.json(response);
 });
 
@@ -16,9 +16,9 @@ app.get('/:from/:to/:timestamp', async function (req, res) {
 	const from = req.params.from;
 	const to = req.params.to;
 	const timestamp = parseInt(req.params.timestamp);
-	const date = new Date(timestamp * 1000);
+	const datetime = new Date(timestamp);
 
-	const response = await getAPIData(from, to, date);
+	const response = await getAPIData(from, to, datetime);
 	res.json(response);
 });
 
