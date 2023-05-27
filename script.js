@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 
 function getTimeFormatted(datetime) {
 	const fullMinutes = datetime.getMinutes() < 10 ? `0${datetime.getMinutes()}` : datetime.getMinutes();
-	return `${datetime.getUTCHours()}:${fullMinutes}`
+	return `${datetime.getUTCHours()}:${fullMinutes}`;
 }
 
 function getDateFormatted(datetime) {
@@ -24,7 +24,7 @@ async function navigateToDetails(page, from, to, datetime) {
 	await page.click('button[type="submit"]');
 
 	// Confirm route
-	await page.waitForSelector('#from-text-again')
+	await page.waitForSelector('#from-text-again');
 	await page.click('button[type="submit"]');
 
 	// Wait for details page to load
@@ -39,7 +39,7 @@ async function extractAPIData(page) {
 	// TODO: clean up
 	for (let i = 0; i < handles.length; i++) {
 		const handle = handles[i];
-		const response = {}
+		const response = {};
 
 		const transportType = await handle.$eval('strong', (el) => el.innerText);
 		response.transport = transportType;
@@ -47,7 +47,7 @@ async function extractAPIData(page) {
 		if (transportType != 'Lopen')
 			response.direction = await handle.$eval('.text-muted.small', (el) => el.innerText);
 
-		response.times = await handle.$$eval('.timeline-time span', els => els.map(el => el.innerText));;
+		response.times = await handle.$$eval('.timeline-time span', els => els.map(el => el.innerText));
 
 		const allStations = await handle.$$eval('.leg-link a', els => {
 			return els.map(el => el.innerText);
@@ -72,13 +72,13 @@ async function extractAPIData(page) {
 		departureTime: steps[0].times[0],
 		arrivalTime: steps[steps.length - 1].times[1],
 		steps: steps
-	}
+	};
 }
 
 async function getAPIData(from, to, datetime) {
 	const browser = await puppeteer.launch({
 		// headless: false,
-		headless: "new",
+		headless: 'new',
 		args: ['--disable-web-security', '--disable-features=IsolateOrigins', ' --disable-site-isolation-trials'],
 	});
 
