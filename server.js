@@ -4,22 +4,43 @@ const getAPIData = require('./script');
 const app = express();
 
 app.get('/:from/:to', async function (req, res) {
-	const from = req.params.from;
-	const to = req.params.to;
+	const from = String(req.params.from);
+	const to = String(req.params.to);
+
 	const datetime = new Date();
 
-	const response = await getAPIData(from, to, datetime);
-	res.json(response);
+	try {
+		const response = await getAPIData(from, to, datetime);
+		res.json(response);
+	} catch (e) {
+		console.log(e);
+		res.status(500).send('Something went wrong');
+	}
 });
 
 app.get('/:from/:to/:timestamp', async function (req, res) {
-	const from = req.params.from;
-	const to = req.params.to;
-	const timestamp = parseInt(req.params.timestamp);
-	const datetime = new Date(timestamp);
+	const from = String(req.params.from);
+	const to = String(req.params.to);
 
-	const response = await getAPIData(from, to, datetime);
-	res.json(response);
+	let datetime;
+
+	try {
+		const timestamp = parseInt(req.params.timestamp);
+		datetime = new Date(timestamp);
+	} catch (e) { // catch NaN
+		if (e instanceof TypeError)
+			res.status(400).send(`Invalid timestamp (${req.params.timestamp})}`);
+
+		return;
+	}
+
+	try {
+		const response = await getAPIData(from, to, datetime);
+		res.json(response);
+	} catch (e) {
+		console.log(e);
+		res.status(500).send('Something went wrong');
+	}
 });
 
 app.listen(3000, () => {
