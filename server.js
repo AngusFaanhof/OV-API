@@ -34,7 +34,7 @@ app.get('/:from/:to/:timestamp', async function (req, res) {
 		return;
 	}
 
-	try {
+	try { // extract function
 		const response = await getAPIData(from, to, datetime);
 		res.json(response);
 	} catch (e) {
